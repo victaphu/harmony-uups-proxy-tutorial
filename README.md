@@ -1,15 +1,15 @@
 # Harmony Contract Verification Tutorial - UUPS Proxy
 Tutorial for harmony contract verification of UUPS proxies using hardhat-etherscan  
-This a part of a 3-part tutorial for contract verification of open zeppelin proxies:  
+This is a part of a 3-part tutorial for contract verification of open zeppelin proxies:  
 - [Transparent Proxies](https://github.com/victaphu/harmony-transparent-proxy-tutorial)
 - [UUPS Proxies](https://github.com/victaphu/harmony-uups-proxy-tutorial)
 - [Beacon Proxies](https://github.com/victaphu/harmony-beacon-proxy-tutorial)
 
-> UUPS shares similar upgrade and verification processes as Transparent Proxies. Unlike transparent proxies, UUPS upgrade logic resides within the implementation contract itself. Refer to https://forum.openzeppelin.com/t/uups-proxies-tutorial-solidity-javascript/7786 for more information on the differences between UUPS and Transparent Proxies, and how to transform existing smart contracts into UUPS-Compliant contracts.  
+> UUPS shares similar upgrade and verification processes as Transparent Proxies. Unlike transparent proxies, UUPS upgrade logic resides within the implementation contract itself. Refer to [uups proxy tutorial](https://forum.openzeppelin.com/t/uups-proxies-tutorial-solidity-javascript/7786) for more information on the differences between UUPS and Transparent Proxies, and how to transform existing smart contracts into UUPS-Compliant contracts.  
 
 
 Prerequisites  
-- Hardhat installed globally (https://hardhat.org/getting-started/)
+- Hardhat installed globally [hardhat](https://hardhat.org/getting-started/)
 - Install npx and npm version 16
 
 To begin  
@@ -41,7 +41,7 @@ Verifying proxy contracts are a two-part process
 
 
 ## Verifying the implementation
-To verify the implementation contract we will need the address of the implementation (note: running the deployContract script will only output the proxy contract, we need to find the implementation conrtracts). All contract address information pertaining to proxy deployment can be found in file:
+To verify the implementation contract we will need the address of the implementation (note: running the deployContract script will only output the proxy contract, we need to find the implementation contracts). All contract address information pertaining to proxy deployment can be found in file:
 ```
 .openzeppelin/unknown-1666700000.json 
 ```
@@ -72,21 +72,21 @@ Successfully verified contract Box on Etherscan.
 https://explorer-2.netlify.app/address/0x088dFEB6Cf54a73dC1626B3AdA5543F60D4A61BF
 ```
 
-If you reach this point then your implementation contract has been deployed and now you can move on to verifying the proxy contract itself.
+If you reach this point then your implementation contract has been deployed and we can move on to verifying the proxy contract itself.
 
 ## Verifying the Proxy
 Proxy verification involves supplying the arguments used to create the proxy and using the contract address output by the deployContract script as input to hardhat's verification process.
 
 For UUPS Proxies, we need the following arguments:  
-- Implementation contract address (found in previous steps, in our example it is 0xa777B754945e59cC59f5f8c99094EC6B92253864)
+- Implementation contract address (found in previous steps, in our example it is 0x088dFEB6Cf54a73dC1626B3AdA5543F60D4A61BF)
 - Argument(s) supplied when we deployed our implementation as a proxy (in our example the argument supplied was 42, refer to scripts/deployContract.js for more information)
-- Proxy Contract address (output from our script, in our example it is 0x599d0A377d1EbfAE882Ef9444fa6466f6c2725C6)
+- Proxy Contract address (output from our script, in our example it is 0x9CDaaBAA3b2390C3a84004707131B3e1AC7e2197)
 
 If you lost the proxy contract address you can find the value in the .openzeppelin/unknown-1666700000.json file under the proxies property:
 ```
 "proxies": [
     {
-      "address": "0x599d0A377d1EbfAE882Ef9444fa6466f6c2725C6",
+      "address": "0x9CDaaBAA3b2390C3a84004707131B3e1AC7e2197",
       "txHash": "0xf28fde079ca4c33be19ba25dbf07c748ff87117621165f0ccb22176eb8fc32ca",
       "kind": "uups"
     }
@@ -96,7 +96,7 @@ If you lost the proxy contract address you can find the value in the .openzeppel
 For the deployment, we have the following values for each argument:
 - Implementation: 0x088dFEB6Cf54a73dC1626B3AdA5543F60D4A61BF
 - Argument(s): 42
-- Proxy Contract Address: 0x599d0A377d1EbfAE882Ef9444fa6466f6c2725C6
+- Proxy Contract Address: 0x9CDaaBAA3b2390C3a84004707131B3e1AC7e2197
 
 Hardhat takes a js file it uses to read the arguments; in our example you can find an argument.js file which contains the following (which you should fill in with your own value found using the previous set of steps):
 ```
@@ -107,17 +107,17 @@ module.exports = [
 ```
 With this informationwe can now verify the proxy contract using the following command:
 ```
-npx hardhat verify --network harmony 0x599d0A377d1EbfAE882Ef9444fa6466f6c2725C6 --constructor-args scripts/arguments.js
+npx hardhat verify --network harmony 0x9CDaaBAA3b2390C3a84004707131B3e1AC7e2197 --constructor-args scripts/arguments.js
 ```
 
 If everything works then you will receive the following message confirming that the contract has been successfully verified:
 ```
 Successfully submitted source code for contract
-@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol:ERC1967Proxy at 0x599d0A377d1EbfAE882Ef9444fa6466f6c2725C6
+@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol:ERC1967Proxy at 0x9CDaaBAA3b2390C3a84004707131B3e1AC7e2197
 for verification on the block explorer. Waiting for verification result...
 
 Successfully verified contract ERC1967Proxy on Etherscan.
-https://explorer.harmony.one/address/0x599d0A377d1EbfAE882Ef9444fa6466f6c2725C6#code
+https://explorer.harmony.one/address/0x9CDaaBAA3b2390C3a84004707131B3e1AC7e2197#code
 ```
 
 Refer to verification troubleshooting below if you encounter any issues during the verification process. Make sure to double-check all the values in arguments.js and that the proxy contract address is correct.
@@ -125,7 +125,7 @@ Refer to verification troubleshooting below if you encounter any issues during t
 ## Verifying upgraded contracts
 Time to time you will be upgrading your contracts. In our example we will upgrade Box.sol to BoxV2.sol and introduce an additional variable (y). Refer to https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable for rules on writing upgradeable smart contracts.
 
-To upgrade our proxy, open the upgradeContract.js file and edit the BOX_ADDRESS value to the contract address of the proxy you deployed (in our example it is 0x599d0A377d1EbfAE882Ef9444fa6466f6c2725C6)
+To upgrade our proxy, open the upgradeContract.js file and edit the BOX_ADDRESS value to the contract address of the proxy you deployed (in our example it is 0x9CDaaBAA3b2390C3a84004707131B3e1AC7e2197)
 
 ```
 const { ethers, upgrades } = require("hardhat");
