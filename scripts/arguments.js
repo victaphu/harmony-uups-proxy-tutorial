@@ -1,4 +1,4 @@
 module.exports = [
-  "0x088dFEB6Cf54a73dC1626B3AdA5543F60D4A61BF", // implementation contract
+  "0x53aDB518944AAeB88f804b52dAf46CACA9c073bF", // implementation contract
   0 // constructor arguments
 ];
